@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using FlipCommerce.Model;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using FlipCommerce.Enums;
+
 namespace FlipCommerce.Repository
 {
     public class FlipCommerceDbContext : DbContext
@@ -31,6 +34,9 @@ namespace FlipCommerce.Repository
             modelBuilder.Entity<Seller>()
                 .HasIndex(s => s.EmailId)
                 .IsUnique();
+            modelBuilder.Entity<Seller>()
+                .Property(s => s.gender)
+                .HasConversion(new EnumToStringConverter<Gender>());
             // Customer Properties
             modelBuilder.Entity<Customer>()
                 .HasIndex(c => c.MobNo)
@@ -42,14 +48,27 @@ namespace FlipCommerce.Repository
                 .Property(c => c.MobNo)
                 .HasMaxLength(10)
                 .IsRequired();
+            modelBuilder.Entity<Customer>()
+                .Property(c => c.gender)
+                .HasConversion(new EnumToStringConverter<Gender>());
             //Card Properties
             modelBuilder.Entity<Card>()
                 .HasIndex(c => c.CardNo)
                 .IsUnique();
+            modelBuilder.Entity<Card>()
+                .Property(c => c.cardType)
+                .HasConversion(new EnumToStringConverter<CardType>());
             // Order properties
             modelBuilder.Entity<Order>()
                 .HasIndex(o => o.OrderNo)
                 .IsUnique();
+            // Product properties
+            modelBuilder.Entity<Product>()
+                .Property(p => p.category)
+                .HasConversion(new EnumToStringConverter<Category>());
+            modelBuilder.Entity<Product>()
+                .Property(p => p.productStatus)
+                .HasConversion(new EnumToStringConverter<ProductStatus>());
 
             // defining the relation between Product and seller
             modelBuilder.Entity<Product>()

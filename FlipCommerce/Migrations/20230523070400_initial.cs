@@ -25,7 +25,7 @@ namespace FlipCommerce.Migrations
                     Age = table.Column<int>(type: "int", nullable: false),
                     EmailId = table.Column<string>(type: "varchar(255)", nullable: false),
                     MobNo = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false),
-                    gender = table.Column<int>(type: "int", nullable: false)
+                    gender = table.Column<string>(type: "longtext", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -43,7 +43,7 @@ namespace FlipCommerce.Migrations
                     Age = table.Column<int>(type: "int", nullable: false),
                     EmailId = table.Column<string>(type: "varchar(255)", nullable: false),
                     MobNo = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false),
-                    gender = table.Column<int>(type: "int", nullable: false)
+                    gender = table.Column<string>(type: "longtext", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -59,7 +59,7 @@ namespace FlipCommerce.Migrations
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     CardNo = table.Column<string>(type: "varchar(255)", nullable: false),
                     cvv = table.Column<int>(type: "int", nullable: false),
-                    cardType = table.Column<int>(type: "int", nullable: false),
+                    cardType = table.Column<string>(type: "longtext", nullable: false),
                     ValidTill = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CustomerId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -128,9 +128,9 @@ namespace FlipCommerce.Migrations
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(type: "longtext", nullable: false),
                     Price = table.Column<int>(type: "int", nullable: false),
-                    category = table.Column<int>(type: "int", nullable: false),
+                    category = table.Column<string>(type: "longtext", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
-                    productStatus = table.Column<int>(type: "int", nullable: false),
+                    productStatus = table.Column<string>(type: "longtext", nullable: false),
                     SellerId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

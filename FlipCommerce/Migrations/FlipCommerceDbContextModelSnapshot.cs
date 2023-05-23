@@ -35,8 +35,9 @@ namespace FlipCommerce.Migrations
                     b.Property<DateTime>("ValidTill")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("cardType")
-                        .HasColumnType("int");
+                    b.Property<string>("cardType")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<int>("cvv")
                         .HasColumnType("int");
@@ -93,8 +94,9 @@ namespace FlipCommerce.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("gender")
-                        .HasColumnType("int");
+                    b.Property<string>("gender")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -188,11 +190,13 @@ namespace FlipCommerce.Migrations
                     b.Property<int>("SellerId")
                         .HasColumnType("int");
 
-                    b.Property<int>("category")
-                        .HasColumnType("int");
+                    b.Property<string>("category")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
-                    b.Property<int>("productStatus")
-                        .HasColumnType("int");
+                    b.Property<string>("productStatus")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -223,8 +227,9 @@ namespace FlipCommerce.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("gender")
-                        .HasColumnType("int");
+                    b.Property<string>("gender")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
