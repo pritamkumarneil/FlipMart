@@ -9,5 +9,10 @@ namespace FlipCommerce.Service.ServiceImpl
         {
             this.flipCommerceDbContext = flipCommerceDbContext;
         }
+
+        int ICartService.AddCart(int amount)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

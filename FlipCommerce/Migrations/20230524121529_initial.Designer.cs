@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlipCommerce.Migrations
 {
     [DbContext(typeof(FlipCommerceDbContext))]
-    [Migration("20230523070400_initial")]
+    [Migration("20230524121529_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -30,7 +30,8 @@ namespace FlipCommerce.Migrations
 
                     b.Property<string>("CardNo")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(16)
+                        .HasColumnType("varchar(16)");
 
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");

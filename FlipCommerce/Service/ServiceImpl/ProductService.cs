@@ -4,6 +4,7 @@ using FlipCommerce.Exceptions;
 using FlipCommerce.Model;
 using FlipCommerce.Repository;
 using FlipCommerce.Transformer;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlipCommerce.Service.ServiceImpl
 {
@@ -37,6 +38,20 @@ namespace FlipCommerce.Service.ServiceImpl
             flipCommerceDbContext.SaveChanges();
 
             return ProductTransfomer.ProductToProductResponseDto(product);
+        }
+        public List<ProductResponseDto> GetAllProducts()
+        {
+            if (flipCommerceDbContext.Products == null)
+            {
+                throw new ProductNotFoundException("No Products Available");
+            }
+            List<Product> products =  flipCommerceDbContext.Products.ToList();
+            List<ProductResponseDto> ans = new List<ProductResponseDto>();
+            foreach (Product product in products)
+            {
+                ans.Add(ProductTransfomer.ProductToProductResponseDto(product));
+            }
+            return ans;
         }
     }
 }

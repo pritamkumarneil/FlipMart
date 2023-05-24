@@ -5,6 +5,8 @@ namespace FlipCommerce.Service
 {
     public interface ICardService
     {
-        public CardResponseDto AddCard(CardRequestDto cardRequestDto); 
+        public CardResponseDto AddCard(CardRequestDto cardRequestDto);
+        public List<CardResponseDto> GetAllCardByCustomerMail(string customerMail);
+
     }
 }

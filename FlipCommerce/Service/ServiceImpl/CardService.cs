@@ -4,6 +4,7 @@ using FlipCommerce.Exceptions;
 using FlipCommerce.Model;
 using FlipCommerce.Repository;
 using FlipCommerce.Transformer;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlipCommerce.Service.ServiceImpl
 {
@@ -19,6 +20,7 @@ namespace FlipCommerce.Service.ServiceImpl
         {
             // first find the customer // to verify if customer exist with given mail or not
             string customerEmailId=cardRequestDto.CustomerEmailId;
+
             if (flipCommerceDbContext.Customers == null)
             {
                 throw new CustomerNotFoundException("No Customer Available");
@@ -41,5 +43,26 @@ namespace FlipCommerce.Service.ServiceImpl
             return CardTransformer.CardToCardResponseDto(card);
 
         }
+        public List<CardResponseDto> GetAllCardByCustomerMail(string customerMail)
+        {
+            if (flipCommerceDbContext.Cards == null)
+            {
+                throw new CardNotFoundException("No card Available");
+            }
+            Customer? customer = flipCommerceDbContext.Customers.Where(c => c.EmailId.Equals(customerMail)).Include(c=>c.Cards).FirstOrDefault();
+
+            if (customer == null)
+            {
+                throw new CustomerNotFoundException("customer with given emailId not found");
+            }
+            List<CardResponseDto> cards = new List<CardResponseDto>();
+            foreach(Card card in customer.Cards.ToList())
+            {
+                cards.Add(CardTransformer.CardToCardResponseDto(card));
+            }
+            return cards;
+
+        }
+
     }
 }

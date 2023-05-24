@@ -56,6 +56,9 @@ namespace FlipCommerce.Repository
                 .HasIndex(c => c.CardNo)
                 .IsUnique();
             modelBuilder.Entity<Card>()
+                .Property(c => c.CardNo)
+                .HasMaxLength(16);
+            modelBuilder.Entity<Card>()
                 .Property(c => c.cardType)
                 .HasConversion(new EnumToStringConverter<CardType>());
             // Order properties

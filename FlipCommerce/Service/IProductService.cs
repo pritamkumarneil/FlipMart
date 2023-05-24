@@ -6,6 +6,7 @@ namespace FlipCommerce.Service
     public interface IProductService
     {
         public ProductResponseDto AddProduct(ProductRequestDto productRequestDto);
+        public List<ProductResponseDto> GetAllProducts();
 
     }
 }

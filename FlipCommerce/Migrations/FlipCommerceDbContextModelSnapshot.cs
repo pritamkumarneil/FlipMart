@@ -27,7 +27,8 @@ namespace FlipCommerce.Migrations
 
                     b.Property<string>("CardNo")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(16)
+                        .HasColumnType("varchar(16)");
 
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");

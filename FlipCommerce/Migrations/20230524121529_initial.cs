@@ -57,7 +57,7 @@ namespace FlipCommerce.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    CardNo = table.Column<string>(type: "varchar(255)", nullable: false),
+                    CardNo = table.Column<string>(type: "varchar(16)", maxLength: 16, nullable: false),
                     cvv = table.Column<int>(type: "int", nullable: false),
                     cardType = table.Column<string>(type: "longtext", nullable: false),
                     ValidTill = table.Column<DateTime>(type: "datetime(6)", nullable: false),
