@@ -15,7 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IOrderService, OrderService>(serviceProvider => new OrderService(serviceProvider.GetRequiredService<FlipCommerceDbContext>()));
     builder.Services.AddScoped<ICardService, CardService>(serviceProvider => new CardService(serviceProvider.GetRequiredService<FlipCommerceDbContext>()));
     builder.Services.AddScoped<IItemService, ItemService>(serviceProvider => new ItemService(serviceProvider.GetRequiredService<FlipCommerceDbContext>()));
-
+    builder.Services.AddCors(option=>option.AddPolicy("FlipCommerce",j=>j.AllowAnyHeader().AllowAnyOrigin().AllowAnyOrigin()));
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -29,7 +29,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors("FlipCommerce");
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

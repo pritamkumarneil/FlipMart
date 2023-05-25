@@ -45,7 +45,7 @@ namespace FlipCommerce.Service.ServiceImpl
             {
                 throw new ProductNotFoundException("No Products Available");
             }
-            List<Product> products =  flipCommerceDbContext.Products.ToList();
+            List<Product> products =  flipCommerceDbContext.Products.Include(p=>p.seller).ToList();
             List<ProductResponseDto> ans = new List<ProductResponseDto>();
             foreach (Product product in products)
             {
