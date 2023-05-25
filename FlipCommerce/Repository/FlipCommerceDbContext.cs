@@ -65,6 +65,9 @@ namespace FlipCommerce.Repository
             modelBuilder.Entity<Order>()
                 .HasIndex(o => o.OrderNo)
                 .IsUnique();
+            modelBuilder.Entity<Order>()
+                .Property(o => o.Status)
+                .HasConversion(new EnumToStringConverter<OrderStatus>());
             // Product properties
             modelBuilder.Entity<Product>()
                 .Property(p => p.category)

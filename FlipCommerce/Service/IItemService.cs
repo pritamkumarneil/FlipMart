@@ -5,7 +5,7 @@ namespace FlipCommerce.Service
 {
     public interface IItemService
     {
-        public ItemResponseDto AddItem(ItemRequestDto itemResponseDto);
-        public string AddToCart(int customerId, int itemId);
+       
+        public ItemResponseDto AddItemToCart(ItemRequestDto itemRequestDto);
     }
 }

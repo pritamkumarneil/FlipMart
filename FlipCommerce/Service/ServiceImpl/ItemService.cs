@@ -6,6 +6,7 @@ using FlipCommerce.Repository;
 using FlipCommerce.Transformer;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
+using System.Xml.Schema;
 
 namespace FlipCommerce.Service.ServiceImpl
 {
@@ -17,17 +18,42 @@ namespace FlipCommerce.Service.ServiceImpl
             this.flipCommerceDbContext = flipCommerceDbContext;
         }
 
-        ItemResponseDto IItemService.AddItem(ItemRequestDto itemRequestDto)
+        public ItemResponseDto AddItemToCart(ItemRequestDto itemRequestDto)
         {
-            // first find the product by productId
+            // first find the customer with give customer mail/ or id
+            // then find the cart associated to that customer
+            // then find the product by productId
             // then check its quantity->// return according to quantity available
             // add this item to inside list of items in product entity
             // add product in item
+
+            // finding customer and validating 
+            if (flipCommerceDbContext.Customers == null)
+            {
+                throw new CustomerNotFoundException("No cutomer exist");
+            }
+            string customerMail = itemRequestDto.CustomerMail;
+            Customer? customer = flipCommerceDbContext.Customers
+                .Where(c => c.EmailId.Equals(customerMail))
+                .Include(c => c.cart)
+                .ThenInclude(c=>c.Items)
+                .ThenInclude(i=>i.product)
+                .FirstOrDefault();
+            if (customer == null)
+            {
+                throw new CustomerNotFoundException("No customer with given mail id exist");
+            }
+
+            //finding cart and validating
+            Cart cart = customer.cart;
+
+            // finding product and validating
+            int requiredQuantity= itemRequestDto.RequiredQuantity;
+           
             if (flipCommerceDbContext.Products == null)
             {
                 throw new ProductNotFoundException("Products Not Available");
             }
-            int requiredQuantity= itemRequestDto.RequiredQuantity;
 
             Product? product = flipCommerceDbContext.Products.Find(itemRequestDto.ProductId);
             if (product == null)
@@ -41,22 +67,48 @@ namespace FlipCommerce.Service.ServiceImpl
                 throw new ProductQantityLesserException("product is not available in given quantity");
             }
 
-            Item item = ItemTranformer.ItemRequestDtoToItem(itemRequestDto);
+            // first finding the product in items
+            Item item=null;
+            // update the cart with total value
+            int totalValue = cart.CartTotal;
 
+            foreach (Item item1 in cart.Items)
+            {
+                if (item1.product.Equals(product))
+                {
+                    int totalRequiredQuantity = item1.RequiredQuantity + requiredQuantity;
+                    if (totalRequiredQuantity > availableQuantity)
+                    {
+                        throw new ProductQantityLesserException(totalRequiredQuantity+ product.Name+ " not available in stock ");
+                    }
+                    item1.RequiredQuantity = totalRequiredQuantity;
+                    cart.CartTotal += (requiredQuantity * product.Price);
+                    item = item1;
+                    break;
+                }
+            }
+            if (item != null)
+            {
+                flipCommerceDbContext.Carts.Update(cart);
+                flipCommerceDbContext.SaveChanges();
+                return ItemTranformer.ItemToItemResponseDto(item);
+            }
+            item = ItemTranformer.ItemRequestDtoToItem(itemRequestDto);
+
+            item.RequiredQuantity = requiredQuantity;
+            cart.CartTotal = totalValue + requiredQuantity * product.Price;
             // make relation between item and product
             item.product = product;
             product.Items.Add(item);
+            
+            item.cart = cart;
+            cart.Items.Add(item);
             // need to add cart also as cart is parent to this entity 
             // otherwise it will throw some error -configure your entity type accordingly
             // it says we cant update a child entity without parent entity
-            try
-            {
-                flipCommerceDbContext.Products.Update(product);
-            }
-            catch(Exception e) 
-            {
-                throw new Exception(" Couldnot update");
-            }
+            // try changing relation between enitity remove cascade delete from some entity
+
+            
             try
             {
                 flipCommerceDbContext.SaveChanges();
@@ -69,44 +121,5 @@ namespace FlipCommerce.Service.ServiceImpl
             return ItemTranformer.ItemToItemResponseDto(item);
         }
 
-        string IItemService.AddToCart(int customerId, int itemId)
-        {
-            if (flipCommerceDbContext.Customers == null)
-            {
-                throw new CustomerNotFoundException("No cusotomer Available");
-            }
-            Customer? customer = flipCommerceDbContext.Customers.Where(c => c.Id == customerId).Include(c => c.cart).FirstOrDefault();
-            if (customer == null)
-            {
-                throw new CustomerNotFoundException("Customer with given id is not available");
-            }
-            Cart? cart = customer.cart;
-            if (cart == null)
-            {
-                throw new CartNotAttachedException("No cart Attached To the Given Customer");
-            }
-            Item? item = flipCommerceDbContext.Items.Where(i => i.Id == itemId).Include(i => i.product).FirstOrDefault();
-            if (item == null)
-            {
-                throw new ItemNotFoundException("Item with given item id doesn't exist");
-            }
-            // calculate the total amount of the cart
-            int totalAmount = cart.CartTotal;
-            int productPrice = item.product.Price;
-            int requiredQuantity = item.RequiredQuantity;
-
-            totalAmount += productPrice * requiredQuantity;
-
-            cart.CartTotal = totalAmount;
-
-            // add relation between cart and items
-            cart.Items.Add(item);
-            item.cart = cart;
-
-            flipCommerceDbContext.Customers.Update(customer);
-            flipCommerceDbContext.SaveChanges();
-
-            return requiredQuantity + " " + item.product.Name + " successfully Added to cart of " + customer.Name + ".";
-        }
     }
 }

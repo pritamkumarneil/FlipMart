@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FlipCommerce.Service.ServiceImpl
 {
-    public class OrderService:IOrderService
+    public class OrderService : IOrderService
     {
         private readonly FlipCommerceDbContext flipCommerceDbContext;
         public OrderService(FlipCommerceDbContext flipCommerceDbContext)
@@ -18,8 +18,8 @@ namespace FlipCommerce.Service.ServiceImpl
 
         OrderResponseDto IOrderService.MakeOrder(OrderRequestDto orderRequestDto)
         {
-            int customerId = orderRequestDto.customerId;
-            int CVV=orderRequestDto.CVV;
+            string customerMail = orderRequestDto.CustomerMail;
+            int CVV = orderRequestDto.CVV;
             string cardNo = orderRequestDto.CardNo;
             // first find customer with given id
             // then  associated to given customer find card 
@@ -36,14 +36,21 @@ namespace FlipCommerce.Service.ServiceImpl
             // now add all those items in the order entity of listItems
             // make relation between customer to order , and order to items
 
+            Order order = OrderTransformer.OrderRequestDtoToOrder(orderRequestDto);
 
             // finding the customer
             if (flipCommerceDbContext.Customers == null)
             {
                 throw new CustomerNotFoundException("No Customer Found");
             }
-            Customer? customer = flipCommerceDbContext.Customers.Where(c => c.Id == customerId).Include(c => c.Cards).Include(c => c.cart).ThenInclude(c=>c.Items).ThenInclude(i=>i.product).FirstOrDefault();
-            
+            Customer? customer = flipCommerceDbContext.Customers
+                .Where(c => c.EmailId.Equals(customerMail))
+                .Include(c => c.Cards)
+                .Include(c => c.cart)
+                .ThenInclude(c => c.Items)
+                .ThenInclude(i => i.product)
+                .FirstOrDefault();
+
             if (customer == null)
             {
                 throw new CustomerNotFoundException("Customer with given id doens't exist");
@@ -55,18 +62,25 @@ namespace FlipCommerce.Service.ServiceImpl
             {
                 throw new CardNotFoundException("No card exist with given detail");
             }
-            ICollection<Card> allCard= customer.Cards;
-            if (!allCard.Contains(card)) 
+            ICollection<Card> allCard = customer.Cards;
+            if (!allCard.Contains(card))
             {
                 throw new CardNotFoundException("Card Not found!!!");
             }
-            else if(card.cvv != CVV)
+            else if (card.cvv != CVV)
             {
                 throw new WrongCVVException("Please Enter correct CVV");
             }
             // getting associated cart to the customer
-            Cart? cart = customer.cart;
+            Cart cart = customer.cart;
+            // check if cart is empty or not 
+            if (cart.CartTotal == 0 || cart.Items.Count == 0)
+            {
+                throw new CartEmptyException("Your cart is Empty");
+            }
+
             int totalAmount = cart.CartTotal;
+            //Console.WriteLine("Total Cart Amount: " + totalAmount);
             // get all the items in the cart
             ICollection<Item> itemsInCart = cart.Items;
             
@@ -75,22 +89,29 @@ namespace FlipCommerce.Service.ServiceImpl
             foreach(Item item in itemsInCart)
             {
                 Product product = item.product;
-                if (product.productStatus == Enums.ProductStatus.OUT_OF_STOCK)
+                if (product.productStatus == Enums.ProductStatus.OUT_OF_STOCK|| product.Quantity < item.RequiredQuantity)
                 {
-                    throw new ProductNotFoundException(product.Name + " is out of stock.");
-                }
-                else if (product.Quantity < item.RequiredQuantity)
-                {
-                    throw new ProductQantityLesserException("Only " + product.Quantity + " " + product.Name + " Available.");
+                    order.Status = Enums.OrderStatus.FAILED;
+                    order.customer = customer;
+                    customer.Orders.Add(order);
+                    return OrderTransformer.OrderToOrderResponseDto(order);
+                    //throw new ProductNotFoundException(product.Name + " is out of stock.");
                 }
             }
             // if all are in stock .. then placing the order
-            Order order = OrderTransformer.OrderRequestDtoToOrder(orderRequestDto);
+
+            
             foreach(Item item in itemsInCart) 
             {
                 // making relation between item and order also 
                 order.Items.Add(item);
                 item.order = order;
+                // also reducing the stock by required quantity
+                item.product.Quantity -= item.RequiredQuantity;
+                if (item.product.Quantity == 0)
+                {
+                    item.product.productStatus = Enums.ProductStatus.OUT_OF_STOCK;
+                }
             }
             order.OrderValue = totalAmount;
             order.CardUsed = card.CardNo;
@@ -101,6 +122,7 @@ namespace FlipCommerce.Service.ServiceImpl
             {
                 itemsInCart.Remove(item);
             }
+
             // make relation between customer to order
             order.customer = customer;
             customer.Orders.Add(order);

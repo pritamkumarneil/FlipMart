@@ -1,4 +1,6 @@
-﻿namespace FlipCommerce.Model
+﻿using FlipCommerce.Enums;
+
+namespace FlipCommerce.Model
 {
     public class Order
     {
@@ -13,6 +15,7 @@
         public int OrderValue { get; set; }
         public DateTime OrderDate { get; set; }
         public string CardUsed { get; set; }
+        public OrderStatus Status { get; set; }
 
         // Navigatinal Properties
         public int CustomerId { get; set; }

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlipCommerce.Migrations
 {
     [DbContext(typeof(FlipCommerceDbContext))]
-    [Migration("20230524121529_initial")]
+    [Migration("20230525073024_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -119,13 +119,13 @@ namespace FlipCommerce.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("CartId")
+                    b.Property<int?>("CartId")
                         .HasColumnType("int");
 
-                    b.Property<int>("OrderId")
+                    b.Property<int?>("OrderId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProductId")
+                    b.Property<int?>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int>("RequiredQuantity")
@@ -164,6 +164,10 @@ namespace FlipCommerce.Migrations
 
                     b.Property<int>("OrderValue")
                         .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -272,21 +276,15 @@ namespace FlipCommerce.Migrations
                 {
                     b.HasOne("FlipCommerce.Model.Cart", "cart")
                         .WithMany("Items")
-                        .HasForeignKey("CartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CartId");
 
                     b.HasOne("FlipCommerce.Model.Order", "order")
                         .WithMany("Items")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OrderId");
 
                     b.HasOne("FlipCommerce.Model.Product", "product")
                         .WithMany("Items")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProductId");
 
                     b.Navigation("cart");
 

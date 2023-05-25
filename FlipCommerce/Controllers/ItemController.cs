@@ -15,12 +15,12 @@ namespace FlipCommerce.Controllers
         {
             this.itemService = itemService;
         }
-        [HttpPost("add")]
-        public async Task<ActionResult<ItemResponseDto>> AddItems(ItemRequestDto itemRequestDto)
+        [HttpPost("add/to-cart")]
+        public async Task<ActionResult<ItemResponseDto>> AddItemToCart(ItemRequestDto itemRequestDto)
         {
             try
             {
-                ItemResponseDto item = itemService.AddItem(itemRequestDto);
+                ItemResponseDto item = itemService.AddItemToCart(itemRequestDto);
                 return Ok(item);
             }
             catch(Exception e)
@@ -28,18 +28,6 @@ namespace FlipCommerce.Controllers
                 return BadRequest(e.Message);
             }
         }
-        [HttpPut("add-to-cart")]
-        public async Task<ActionResult<string>> AddItemToCart(int customerId,int itemId)
-        {
-            try
-            {
-                string response = itemService.AddToCart(customerId, itemId);
-                return Ok(response);
-            }
-            catch(Exception e)
-            {
-                return NotFound(e.Message);
-            }
-        }
+       
     }
 }
