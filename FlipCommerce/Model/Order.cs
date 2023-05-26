@@ -16,6 +16,7 @@ namespace FlipCommerce.Model
         public DateTime OrderDate { get; set; }
         public string CardUsed { get; set; }
         public OrderStatus Status { get; set; }
+        public DateTime DeliveryDate { get; set; }
 
         // Navigatinal Properties
         public int CustomerId { get; set; }

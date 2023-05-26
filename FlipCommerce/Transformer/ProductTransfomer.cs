@@ -23,7 +23,7 @@ namespace FlipCommerce.Transformer
             productResponseDto.ProductName = product.Name;
             productResponseDto.SellerName = product.seller == null ? "" : product.seller.Name;
             productResponseDto.Status = product.productStatus.ToString();
-
+            productResponseDto.ProductPrice = product.Price;
 
 
             return productResponseDto;

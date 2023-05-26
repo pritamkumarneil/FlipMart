@@ -16,12 +16,12 @@ namespace FlipCommerce.Controllers
             this.orderService = orderService;
         }
 
-        [HttpPost("make-order")]
-        public async Task<ActionResult<OrderResponseDto>> MakeOrder(OrderRequestDto orderRequestDto)
+        [HttpPost("checkout/cart")]
+        public async Task<ActionResult<OrderResponseDto>> CheckoutCart(CartCheckoutDto cartCheckoutDto)
         {
             try
             {
-                OrderResponseDto order = orderService.MakeOrder(orderRequestDto);
+                OrderResponseDto order = orderService.CheckoutCart(cartCheckoutDto);
                 return Ok(order);
             }
             catch(Exception ex)
@@ -29,5 +29,21 @@ namespace FlipCommerce.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPost("make/order")]
+        public async Task<ActionResult<OrderResponseDto>> MakeOrder(OrderRequestDto orderRequestDto)
+        {
+            try
+            {
+                OrderResponseDto order = orderService.MakeOrder(orderRequestDto);
+                return Ok(order);
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+        // check order status 
+        // cancel order 
+
     }
 }

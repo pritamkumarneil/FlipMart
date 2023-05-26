@@ -42,5 +42,9 @@ namespace FlipCommerce.Controllers
                 return NotFound(e.Message);
             }
         }
+        // Add address list to the customer entity 
+        // get all order
+        // get successful orders
+        // get cancelled order
     }
 }

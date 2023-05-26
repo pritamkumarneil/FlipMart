@@ -21,4 +21,6 @@ namespace FlipCommerce.Model
 
         public virtual ICollection<Item> Items { get; set; }
     }
+    // make another table for productImage//product entity will contain the list of product image
+    // and product image table will contain the link of the product image and the foreign key of product
 }

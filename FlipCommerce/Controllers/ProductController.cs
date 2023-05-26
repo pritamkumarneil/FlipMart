@@ -42,5 +42,6 @@ namespace FlipCommerce.Controllers
                 return NotFound(ex.Message);
             }
         }
+        // add image to the product . 
     }
 }

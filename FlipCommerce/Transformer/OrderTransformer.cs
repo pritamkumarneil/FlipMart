@@ -6,7 +6,7 @@ namespace FlipCommerce.Transformer
 {
     public class OrderTransformer
     {
-        public static Order OrderRequestDtoToOrder(OrderRequestDto orderRequestDto)
+        public static Order CartCheckoutDtoToOrder(CartCheckoutDto orderRequestDto)
         {
             Order order = new();
 

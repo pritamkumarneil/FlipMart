@@ -20,12 +20,13 @@ namespace FlipCommerce.Service.ServiceImpl
 
         public ItemResponseDto AddItemToCart(ItemRequestDto itemRequestDto)
         {
-            // first find the customer with give customer mail/ or id
+            // first find the customer with given customer mail/ or id
             // then find the cart associated to that customer
             // then find the product by productId
             // then check its quantity->// return according to quantity available
-            // add this item to inside list of items in product entity
+            // add this item  inside list of items in product entity
             // add product in item
+            // add item to cart 
 
             // finding customer and validating 
             if (flipCommerceDbContext.Customers == null)
@@ -67,11 +68,13 @@ namespace FlipCommerce.Service.ServiceImpl
                 throw new ProductQantityLesserException("product is not available in given quantity");
             }
 
-            // first finding the product in items
+            // first finding the product in list of items in cart
             Item item=null;
             // update the cart with total value
             int totalValue = cart.CartTotal;
-
+            // if product in item already availabe and is in the cart also 
+            // then simply increasing the count of product inside that item 
+            // and also updating the new cart value .. we are not adding new item for same product
             foreach (Item item1 in cart.Items)
             {
                 if (item1.product.Equals(product))
@@ -87,12 +90,15 @@ namespace FlipCommerce.Service.ServiceImpl
                     break;
                 }
             }
+            // if product inside item found then update the cart with existing item only
             if (item != null)
             {
                 flipCommerceDbContext.Carts.Update(cart);
                 flipCommerceDbContext.SaveChanges();
                 return ItemTranformer.ItemToItemResponseDto(item);
             }
+            // if product not found in the list of items in cart then will create new item and add to 
+            // the list of items in cart
             item = ItemTranformer.ItemRequestDtoToItem(itemRequestDto);
 
             item.RequiredQuantity = requiredQuantity;
@@ -106,7 +112,7 @@ namespace FlipCommerce.Service.ServiceImpl
             // need to add cart also as cart is parent to this entity 
             // otherwise it will throw some error -configure your entity type accordingly
             // it says we cant update a child entity without parent entity
-            // try changing relation between enitity remove cascade delete from some entity
+            // try changing relation between enitity make foreign key nullabe by using '?' after datatype in entity
 
             
             try

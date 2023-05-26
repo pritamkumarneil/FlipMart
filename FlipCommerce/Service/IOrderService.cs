@@ -5,6 +5,7 @@ namespace FlipCommerce.Service
 {
     public interface IOrderService
     {
+        public OrderResponseDto CheckoutCart(CartCheckoutDto cartCheckoutDto);
         public OrderResponseDto MakeOrder(OrderRequestDto orderRequestDto);
     }
 }

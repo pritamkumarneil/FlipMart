@@ -16,11 +16,11 @@ namespace FlipCommerce.Service.ServiceImpl
             this.flipCommerceDbContext = flipCommerceDbContext;
         }
 
-        OrderResponseDto IOrderService.MakeOrder(OrderRequestDto orderRequestDto)
+        OrderResponseDto IOrderService.CheckoutCart(CartCheckoutDto cartCheckoutDto)
         {
-            string customerMail = orderRequestDto.CustomerMail;
-            int CVV = orderRequestDto.CVV;
-            string cardNo = orderRequestDto.CardNo;
+            string customerMail = cartCheckoutDto.CustomerMail;
+            int CVV = cartCheckoutDto.CVV;
+            string cardNo = cartCheckoutDto.CardNo;
             // first find customer with given id
             // then  associated to given customer find card 
             // validate all details of the card 
@@ -36,7 +36,7 @@ namespace FlipCommerce.Service.ServiceImpl
             // now add all those items in the order entity of listItems
             // make relation between customer to order , and order to items
 
-            Order order = OrderTransformer.OrderRequestDtoToOrder(orderRequestDto);
+            Order order = OrderTransformer.CartCheckoutDtoToOrder(cartCheckoutDto);
 
             // finding the customer
             if (flipCommerceDbContext.Customers == null)
@@ -115,6 +115,8 @@ namespace FlipCommerce.Service.ServiceImpl
             }
             order.OrderValue = totalAmount;
             order.CardUsed = card.CardNo;
+            order.DeliveryDate= DateTime.Now.AddDays(4);
+            order.Status = Enums.OrderStatus.IN_PROGRESS;
 
             // removing all items from cart;
             cart.CartTotal = 0;
@@ -135,5 +137,20 @@ namespace FlipCommerce.Service.ServiceImpl
 
         }
 
+        OrderResponseDto IOrderService.MakeOrder(OrderRequestDto orderRequestDto)
+        {
+            // first check if customer is valid or not 
+            // then check if the card details are valid or not 
+            // then check if product is valid or not 
+            // again check if product is available or not 
+            // if all goes well then create item 
+            // relate this item to the product given 
+            // add item to the list of items in order and make relation between them
+            // make relation between customer and order
+            // finaly save the order
+            // return the order response dto 
+
+            throw new Exception("Function MakeOrder in Order Service is not implemented yet. Feature is comming soon!!");
+        }
     }
 }
