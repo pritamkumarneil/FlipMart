@@ -15,6 +15,16 @@ namespace FlipCommerce.Transformer
             
             return order;
         }
+        public static Order OrderRequestDtoToOrder(OrderRequestDto orderRequestDto)
+        {
+            Order order = new();
+            order.OrderDate= DateTime.Now;
+            order.OrderNo = Guid.NewGuid().ToString();
+            order.DeliveryDate = DateTime.Now.AddDays(5);
+            order.CardUsed = orderRequestDto.CardNo;
+            order.Status = Enums.OrderStatus.IN_PROGRESS;
+            return order;
+        }
         public static OrderResponseDto OrderToOrderResponseDto(Order order)
         {
             OrderResponseDto orderResponseDto = new OrderResponseDto();

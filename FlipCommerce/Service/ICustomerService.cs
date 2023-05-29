@@ -8,5 +8,6 @@ namespace FlipCommerce.Service
         public CustomerResponseDto AddCustomer(CustomerRequestDto customerRequestDto);
         public CustomerResponseDto GetCustomerByEmail(string email);
         public List<CustomerResponseDto> GetAllCustomers();
+        public CartResponseDto GetCart(string customerMail);
     }
 }

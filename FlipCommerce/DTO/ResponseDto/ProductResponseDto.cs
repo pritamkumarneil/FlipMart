@@ -7,5 +7,6 @@
         public string Status { get; set; }
         public int ProductPrice { get; set; }
         public string Message { get; set; }
+        public List<string> imageUrls { get; set; }
     }
 }

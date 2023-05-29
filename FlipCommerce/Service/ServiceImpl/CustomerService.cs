@@ -4,6 +4,7 @@ using FlipCommerce.Exceptions;
 using FlipCommerce.Model;
 using FlipCommerce.Repository;
 using FlipCommerce.Transformer;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlipCommerce.Service.ServiceImpl
 {
@@ -63,6 +64,25 @@ namespace FlipCommerce.Service.ServiceImpl
                 throw new CustomerNotFoundException("Costomer not found with emailId");
             }
             return CustomerTransformer.CustomerToCustomerResponseDto(customer);
+        }
+        public CartResponseDto GetCart(string customerMail)
+        {
+            if (flipCommerceDbContext.Customers == null)
+            {
+                throw new CustomerNotFoundException("Customer Not Found");
+            }
+            Customer? customer = flipCommerceDbContext.Customers
+                .Where(c => c.EmailId.Equals(customerMail))
+                .Include(c => c.cart)
+                .ThenInclude(c => c.Items)
+                .ThenInclude(i => i.product)
+                .FirstOrDefault();
+            if (customer == null)
+            {
+                throw new CustomerNotFoundException("Customer with given mail doesn't Exist");
+            }
+
+            return CartTransformer.CartToCartResponseDto(customer.cart);
         }
     }
 }

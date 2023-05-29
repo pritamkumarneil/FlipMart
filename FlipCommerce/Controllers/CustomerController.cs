@@ -42,6 +42,20 @@ namespace FlipCommerce.Controllers
                 return NotFound(e.Message);
             }
         }
+        // get cart
+        [HttpGet("get/cart")]
+        public async Task<ActionResult<CartResponseDto>> GetCart(string customerMail)
+        {
+            try
+            {
+                CartResponseDto cart = customerService.GetCart(customerMail);
+                return Ok(cart);
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
         // Add address list to the customer entity 
         // get all order
         // get successful orders

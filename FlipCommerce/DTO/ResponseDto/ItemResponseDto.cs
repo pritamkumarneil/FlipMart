@@ -5,5 +5,6 @@
         public string ProductName { get; set; }
         public int Qantity { get; set; }
         public string Message { get; set; }
+        public ProductResponseDto product {get;set;}
     }
 }

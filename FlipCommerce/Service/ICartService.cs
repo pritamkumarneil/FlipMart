@@ -1,9 +1,11 @@
-﻿using FlipCommerce.DTO.ResponseDto;
+﻿using FlipCommerce.DTO.RequestDto;
+using FlipCommerce.DTO.ResponseDto;
 
 namespace FlipCommerce.Service
 {
     public interface ICartService
     {
-        public int AddCart(int amount);
+        public CartResponseDto AddItemToCart(ItemRequestDto itemRequestdto);
+        public CartResponseDto GetCart(int customerId);
     }
 }

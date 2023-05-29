@@ -7,5 +7,8 @@ namespace FlipCommerce.Service
     {
         public OrderResponseDto CheckoutCart(CartCheckoutDto cartCheckoutDto);
         public OrderResponseDto MakeOrder(OrderRequestDto orderRequestDto);
+        public List<OrderResponseDto> GetOrders(string customerMail);
+        string CheckStatus(string orderNo);
+        public OrderResponseDto CancelOrder(string orderNo);
     }
 }

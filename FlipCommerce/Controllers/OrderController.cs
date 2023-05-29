@@ -42,8 +42,48 @@ namespace FlipCommerce.Controllers
                 return BadRequest(e.Message);
             }
         }
+        // get all orders
+        [HttpGet("get/all")]
+        public async Task<ActionResult<IEnumerable<OrderResponseDto>>> GetOrders(string customerMail)
+        {
+            try
+            {
+                List<OrderResponseDto> orders = orderService.GetOrders(customerMail);
+                return Ok(orders);
+            }
+            catch(Exception e)
+            {
+                return NotFound(e.Message);
+            }
+        }
         // check order status 
+        [HttpGet("check/status")]
+        public async Task<ActionResult<string>> CheckStatus(string OrderNo)
+        {
+            try
+            {
+                string response = orderService.CheckStatus(OrderNo);
+                return Ok(response);
+            }
+            catch(Exception e)
+            {
+                return NotFound(e.Message);
+            }
+        }
         // cancel order 
+        [HttpDelete("cancel")]
+        public async Task<ActionResult<OrderResponseDto>> CancelOrder(string orderNo)
+        {
+            try
+            {
+                OrderResponseDto cancelledOrder = orderService.CancelOrder(orderNo);
+                return Ok(cancelledOrder);
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
 
     }
 }

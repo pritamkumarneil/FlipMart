@@ -150,7 +150,156 @@ namespace FlipCommerce.Service.ServiceImpl
             // finaly save the order
             // return the order response dto 
 
-            throw new Exception("Function MakeOrder in Order Service is not implemented yet. Feature is comming soon!!");
+            // Validating Customer Details
+            string customerMail = orderRequestDto.CustomerMail;
+            if (flipCommerceDbContext.Customers == null)
+            {
+                throw new CustomerNotFoundException("No Customer Found");
+            }
+            Customer? customer = flipCommerceDbContext.Customers
+                .Where(c => c.EmailId.Equals(customerMail))
+                .Include(c => c.Cards)
+                .Include(c=>c.Orders)
+                .ThenInclude(o=>o.Items)
+                .ThenInclude(i=>i.product)
+                .FirstOrDefault();
+
+            if (customer == null)
+            {
+                throw new CustomerNotFoundException("Customer with given id doens't exist");
+            }
+
+
+            // validating Carddetails
+            string cardNo = orderRequestDto.CardNo;
+            int CVV = orderRequestDto.CVV;
+            Card? card = flipCommerceDbContext.Cards.Where(c => c.CardNo.Equals(cardNo)).FirstOrDefault();
+            if (card == null)
+            {
+                throw new CardNotFoundException("No card exist with given detail");
+            }
+            ICollection<Card> allCard = customer.Cards;
+            if (!allCard.Contains(card))
+            {
+                throw new CardNotFoundException("Card Not found!!!");
+            }
+            else if (card.cvv != CVV)
+            {
+                throw new WrongCVVException("Please Enter correct CVV");
+            }
+
+            // Validate Product 
+            Product? product = flipCommerceDbContext.Products.Find(orderRequestDto.PoductId);
+            if (product == null)
+            {
+                throw new ProductNotFoundException("Invalid Product Id");
+            }
+            if (product.productStatus.Equals(Enums.ProductStatus.OUT_OF_STOCK))
+            {
+                throw new ProductNotFoundException("Product is Out Of Stock");
+            }
+            if (product.Quantity < orderRequestDto.RequiredQuantity)
+            {
+                throw new ProductQantityLesserException("Insufficient Quantity Availabe for you order");
+            }
+            product.Quantity-=orderRequestDto.RequiredQuantity;
+            if (product.Quantity == 0)
+            {
+                product.productStatus = Enums.ProductStatus.OUT_OF_STOCK;
+            }
+            // create Item 
+            Item item = new Item();
+            item.RequiredQuantity = orderRequestDto.RequiredQuantity;
+            
+            // establishing relationship between item and product
+            item.product = product;
+            product.Items.Add(item);
+
+            Order order = OrderTransformer.OrderRequestDtoToOrder(orderRequestDto);
+
+            order.OrderValue += item.RequiredQuantity * product.Price;
+            
+
+            // establishing relation between order and items
+            order.Items.Add(item);
+            item.order=order;
+
+            // establishing relation between order and customer 
+            order.customer = customer;
+            customer.Orders.Add(order);
+            flipCommerceDbContext.Customers.Update(customer);
+            flipCommerceDbContext.SaveChanges();
+
+
+            return OrderTransformer.OrderToOrderResponseDto(order);
+
+            //throw new Exception("Function MakeOrder in Order Service is not implemented yet. Feature is comming soon!!");
+        }
+        public List<OrderResponseDto> GetOrders(string customerMail)
+        {
+            if(flipCommerceDbContext.Customers == null)
+            {
+                throw new CustomerNotFoundException("Customer not found");
+            }
+            Customer? customer = flipCommerceDbContext.Customers
+                .Where(c=>c.EmailId.Equals(customerMail))
+                .Include(c=>c.Orders)
+                .FirstOrDefault();
+            if (customer == null)
+            {
+                throw new CustomerNotFoundException("Customer not found");
+            }
+            List<OrderResponseDto> orders = new();
+
+            foreach(Order order in customer.Orders)
+            {
+                orders.Add(OrderTransformer.OrderToOrderResponseDto(order));
+            }
+            return orders;
+        }
+        public string CheckStatus(string orderNo)
+        {
+            if (flipCommerceDbContext.Orders == null)
+            {
+                throw new OrderNotFoundException("No orders made yet");
+            }
+            Order? order=flipCommerceDbContext.Orders.Where(O=>O.OrderNo.Equals(orderNo)).FirstOrDefault();
+            if (order == null)
+            {
+                throw new OrderNotFoundException("Wrong Ordre NO");
+            }
+            return order.Status.ToString();
+        }
+        public OrderResponseDto CancelOrder(string orderNo)
+        {
+            if (flipCommerceDbContext.Orders == null)
+            {
+                throw new OrderNotFoundException("No orders made yet");
+            }
+            Order? order = flipCommerceDbContext.Orders
+                .Where(O => O.OrderNo.Equals(orderNo))
+                .Include(O=>O.Items)
+                .ThenInclude(i=>i.product)
+                .FirstOrDefault();
+            if (order == null)
+            {
+                throw new OrderNotFoundException("Wrong Ordre NO");
+            }
+            // check if order is delivered or alreadyCanceled
+            if (order.Status.Equals(Enums.OrderStatus.CANCELLED)
+                ||order.Status.Equals(Enums.OrderStatus.FAILED)
+                ||order.Status.Equals(Enums.OrderStatus.DELIVERED))
+            {
+                throw new OrderNotFoundException("Cant Cancel This Order");
+            }
+            foreach(Item item in order.Items)
+            {
+                Product product = item.product;
+                product.Quantity += item.RequiredQuantity;
+            }
+            order.Status = Enums.OrderStatus.CANCELLED;
+            flipCommerceDbContext.SaveChanges();
+            return OrderTransformer.OrderToOrderResponseDto(order);
         }
     }
 }

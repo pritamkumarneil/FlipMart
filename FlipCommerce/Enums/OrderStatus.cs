@@ -5,6 +5,7 @@
         SUCCESSFUL,
         IN_PROGRESS,
         CANCELLED,
+        DELIVERED,
         FAILED
     }
 }

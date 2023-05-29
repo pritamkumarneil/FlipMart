@@ -4,9 +4,9 @@ using FlipCommerce.Exceptions;
 using FlipCommerce.Model;
 using FlipCommerce.Repository;
 using FlipCommerce.Transformer;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
+
 using Microsoft.EntityFrameworkCore;
-using System.Xml.Schema;
+
 
 namespace FlipCommerce.Service.ServiceImpl
 {
@@ -127,5 +127,51 @@ namespace FlipCommerce.Service.ServiceImpl
             return ItemTranformer.ItemToItemResponseDto(item);
         }
 
+        Item IItemService.AddItem(ItemRequestDto itemRequestDto)
+        {
+            //customer Validation
+            if (flipCommerceDbContext.Customers == null)
+            {
+                throw new CustomerNotFoundException("No cutomer exist");
+            }
+            string customerMail = itemRequestDto.CustomerMail;
+            Customer? customer = flipCommerceDbContext.Customers
+                .Where(c => c.EmailId.Equals(customerMail))
+                .Include(c => c.cart)
+                .ThenInclude(c => c.Items)
+                .ThenInclude(i => i.product)
+                .FirstOrDefault();
+            if (customer == null)
+            {
+                throw new CustomerNotFoundException("No customer with given mail id exist");
+            }
+
+            //product validation
+            int requiredQuantity = itemRequestDto.RequiredQuantity;
+
+            if (flipCommerceDbContext.Products == null)
+            {
+                throw new ProductNotFoundException("Products Not Available");
+            }
+
+            Product? product = flipCommerceDbContext.Products.Find(itemRequestDto.ProductId);
+            if (product == null)
+            {
+                throw new ProductNotFoundException("Product with given Id Not found");
+            }
+            int availableQuantity = product.Quantity;
+
+            if (requiredQuantity > availableQuantity)
+            {
+                throw new ProductQantityLesserException("product is not available in given quantity");
+            }
+
+            Item item = ItemTranformer.ItemRequestDtoToItem(itemRequestDto);
+
+            item.RequiredQuantity = requiredQuantity;
+
+            return item;
+
+        }
     }
 }

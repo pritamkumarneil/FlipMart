@@ -20,7 +20,7 @@ namespace FlipCommerce.Transformer
 
             itemResponseDto.Qantity = item.RequiredQuantity;
             itemResponseDto.ProductName = item.product == null ? "Not Found!" : item.product.Name;
-            
+            itemResponseDto.product = ProductTransfomer.ProductToProductResponseDto(item.product);
             return itemResponseDto;
         }
     }
