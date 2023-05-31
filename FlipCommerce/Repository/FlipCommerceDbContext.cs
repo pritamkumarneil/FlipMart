@@ -14,6 +14,7 @@ namespace FlipCommerce.Repository
         public DbSet<Cart> Carts { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<ProductImage> ProductImage { get; set; }
 
         public FlipCommerceDbContext(DbContextOptions<FlipCommerceDbContext> options) : base(options)
         {
@@ -75,6 +76,21 @@ namespace FlipCommerce.Repository
             modelBuilder.Entity<Product>()
                 .Property(p => p.productStatus)
                 .HasConversion(new EnumToStringConverter<ProductStatus>());
+            // deliveryAddress properties
+            modelBuilder.Entity<DeliveryAddress>()
+                .Property(da => da.MobNo)
+                .HasMaxLength(10);
+
+            //defining relation between Customer and deliveryAddress
+            modelBuilder.Entity<DeliveryAddress>()
+                .HasOne<Customer>(da => da.customer)
+                .WithMany(c => c.addresses)
+                .HasForeignKey(da => da.CustomerId);
+            //defining relation between product and product image
+            modelBuilder.Entity<ProductImage>()
+                .HasOne<Product>(pi => pi.product)
+                .WithMany(p => p.ProductImages)
+                .HasForeignKey(pi => pi.ProductId);
 
             // defining the relation between Product and seller
             modelBuilder.Entity<Product>()

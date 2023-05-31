@@ -7,6 +7,7 @@ namespace FlipCommerce.Model
         public Product()
         {
             this.Items=new HashSet<Item>();
+            this.ProductImages=new HashSet<ProductImage>();
         }
         public int Id { get; set; }
         public string Name { get; set; }
@@ -20,6 +21,8 @@ namespace FlipCommerce.Model
         public Seller seller { get; set; }
 
         public virtual ICollection<Item> Items { get; set; }
+
+        public virtual ICollection<ProductImage> ProductImages { get; set; }
     }
     // make another table for productImage//product entity will contain the list of product image
     // and product image table will contain the link of the product image and the foreign key of product

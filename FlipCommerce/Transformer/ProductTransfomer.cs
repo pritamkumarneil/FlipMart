@@ -14,18 +14,24 @@ namespace FlipCommerce.Transformer
             product.Price = productRequestDto.Price;
             product.Quantity = productRequestDto.Quantity;
             product.category = productRequestDto.category;
+            //product.ProductImages.Add();
             return product;
         } 
         public static ProductResponseDto ProductToProductResponseDto(Product product)
         {
             ProductResponseDto productResponseDto = new();
-
+            productResponseDto.productId = product.Id;
             productResponseDto.ProductName = product.Name;
             productResponseDto.SellerName = product.seller == null ? "" : product.seller.Name;
             productResponseDto.Status = product.productStatus.ToString();
             productResponseDto.ProductPrice = product.Price;
-
-
+            productResponseDto.availableQuanity = product.Quantity;
+            productResponseDto.category = product.category.ToString();
+            productResponseDto.imageUrls=new List<string> ();
+            foreach(ProductImage image in product.ProductImages)
+            {
+                productResponseDto.imageUrls.Add(image.ImageUrl);
+            }
             return productResponseDto;
         }
     }

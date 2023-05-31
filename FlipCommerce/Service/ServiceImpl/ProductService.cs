@@ -30,6 +30,14 @@ namespace FlipCommerce.Service.ServiceImpl
             }
             Product product=ProductTransfomer.ProductRequestDtoToProduct(productRequestDto);
 
+            // add product image enitity
+            ProductImage image = new ProductImage();
+            image.ImageUrl = productRequestDto.imageUrl;
+            // making relation between product and productImage
+            product.ProductImages.Add(image);
+            image.product = product;
+
+
             // add seller to product and prouct to seller
             product.seller = seller;
             seller.Products.Add(product);
@@ -45,7 +53,7 @@ namespace FlipCommerce.Service.ServiceImpl
             {
                 throw new ProductNotFoundException("No Products Available");
             }
-            List<Product> products =  flipCommerceDbContext.Products.Include(p=>p.seller).ToList();
+            List<Product> products =  flipCommerceDbContext.Products.Include(p=>p.seller).Include(p=>p.ProductImages).ToList();
             List<ProductResponseDto> ans = new List<ProductResponseDto>();
             foreach (Product product in products)
             {

@@ -76,6 +76,7 @@ namespace FlipCommerce.Service.ServiceImpl
                 .Include(c => c.cart)
                 .ThenInclude(c => c.Items)
                 .ThenInclude(i => i.product)
+                .ThenInclude(p => p.ProductImages)
                 .FirstOrDefault();
             if (customer == null)
             {

@@ -6,6 +6,7 @@
         {
             this.Cards = new HashSet<Card>();
             this.Orders=new HashSet<Order>();
+            this.addresses = new HashSet<DeliveryAddress>();
         }
 
         //Navigational Properties
@@ -15,5 +16,7 @@
         public virtual Cart cart { get; set; }
 
         public virtual ICollection<Order> Orders { get; set; }
+
+        public virtual ICollection<DeliveryAddress> addresses { get; set; }
     }
 }
