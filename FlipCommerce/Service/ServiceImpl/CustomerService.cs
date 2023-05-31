@@ -85,5 +85,46 @@ namespace FlipCommerce.Service.ServiceImpl
 
             return CartTransformer.CartToCartResponseDto(customer.cart);
         }
+
+        CartResponseDto ICustomerService.RemoveItemFromCart(int productId, string customerMail)
+        {
+            if (flipCommerceDbContext.Customers == null)
+            {
+                throw new CustomerNotFoundException("No customer Exist");
+            }
+            // This could have been done using singleSplit qurey in order to make it simple
+            Customer? customer = flipCommerceDbContext.Customers
+                .Where(c => c.EmailId.Equals(customerMail))
+                .Include(c => c.cart)
+                .ThenInclude(c => c.Items)
+                .ThenInclude(i => i.product)
+                .ThenInclude(p=>p.ProductImages)
+                .FirstOrDefault();
+
+            if (customer == null)
+            {
+                throw new CustomerNotFoundException("Customer with given mail doesn't exist");
+            }
+
+            Product? product = flipCommerceDbContext.Products.Find(productId);
+            if (product == null)
+            {
+                throw new ProductNotFoundException("product Not found with given id");
+            }
+            Cart cart = customer.cart;
+            foreach(Item item in cart.Items)
+            {
+                if (item.product.Id == productId)
+                {
+                    /*cart.Items.Remove(item);
+                    item.product = null;*/
+                    cart.CartTotal -= (item.RequiredQuantity * product.Price);
+                    flipCommerceDbContext.Items.Remove(item);
+                    break;
+                }
+            }
+            flipCommerceDbContext.SaveChanges();
+            return CartTransformer.CartToCartResponseDto(cart);
+        }
     }
 }

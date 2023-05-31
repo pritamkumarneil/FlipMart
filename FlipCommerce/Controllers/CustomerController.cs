@@ -56,6 +56,20 @@ namespace FlipCommerce.Controllers
                 return BadRequest(e.Message);
             }
         }
+        [HttpDelete("cart/item/remove")]
+        public  async Task<ActionResult<CartResponseDto>> RemoveItemFromCart(int productId,string customerMail)
+        {
+            try
+            {
+                CartResponseDto cart = customerService.RemoveItemFromCart(productId, customerMail);
+                return Ok(cart);
+            }
+            catch(Exception e)
+            {
+                return NotFound(e.Message);
+            }
+
+        }
         // Add address list to the customer entity 
         // get all order
         // get successful orders
