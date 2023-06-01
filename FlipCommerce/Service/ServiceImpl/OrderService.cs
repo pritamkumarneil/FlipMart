@@ -124,7 +124,13 @@ namespace FlipCommerce.Service.ServiceImpl
             {
                 itemsInCart.Remove(item);
             }
-
+            // adding delivery Address to the customer and order 
+            DeliveryAddress address = AddressTransformer.AddressRequestDtoToDeliveryAddress(cartCheckoutDto.address);
+            address.Orders.Add(order);
+            order.address = address;
+            // making relation between customer and address
+            customer.addresses.Add(address);
+            address.customer = customer;
             // make relation between customer to order
             order.customer = customer;
             customer.Orders.Add(order);
@@ -244,6 +250,7 @@ namespace FlipCommerce.Service.ServiceImpl
             Customer? customer = flipCommerceDbContext.Customers
                 .Where(c=>c.EmailId.Equals(customerMail))
                 .Include(c=>c.Orders)
+                .ThenInclude(o=>o.address)
                 .FirstOrDefault();
             if (customer == null)
             {

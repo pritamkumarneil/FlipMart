@@ -21,7 +21,8 @@ namespace FlipCommerce.Model
         // Navigatinal Properties
         public int CustomerId { get; set; }
         public Customer customer { get; set; }
-
+        public int? DeliveryAddressId { get; set; }
+        public DeliveryAddress? address { get; set; }
         public ICollection<Item> Items { get; set; }
 
     }

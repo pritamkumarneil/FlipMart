@@ -80,7 +80,11 @@ namespace FlipCommerce.Repository
             modelBuilder.Entity<DeliveryAddress>()
                 .Property(da => da.MobNo)
                 .HasMaxLength(10);
-
+            // defining relatin between order and delivery Address
+            modelBuilder.Entity<Order>()
+                .HasOne(O => O.address)
+                .WithMany(da => da.Orders)
+                .HasForeignKey(O => O.DeliveryAddressId);
             //defining relation between Customer and deliveryAddress
             modelBuilder.Entity<DeliveryAddress>()
                 .HasOne<Customer>(da => da.customer)
