@@ -223,7 +223,7 @@ namespace FlipCommerce.Service.ServiceImpl
 
             Order order = OrderTransformer.OrderRequestDtoToOrder(orderRequestDto);
 
-            order.OrderValue += item.RequiredQuantity * product.Price;
+            order.OrderValue += (item.RequiredQuantity * (1 - (product.discount / 100)) * product.Price);
             
 
             // establishing relation between order and items

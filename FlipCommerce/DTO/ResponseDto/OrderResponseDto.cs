@@ -7,6 +7,7 @@ namespace FlipCommerce.DTO.ResponseDto
         public string OrderNo { get; set; }
         public string OrderStatus { get; set; }
         public DateTime OrderDate { get; set; }
+        public DateTime deliveryDate { get; set; }
         public int TotalAmount { get; set; }
         public string CardUsed { get; set; }// only last four digit should be visible
         public AddressDto address { get; set; }

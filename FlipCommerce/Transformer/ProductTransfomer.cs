@@ -14,6 +14,7 @@ namespace FlipCommerce.Transformer
             product.Price = productRequestDto.Price;
             product.Quantity = productRequestDto.Quantity;
             product.category = productRequestDto.category;
+            product.discount = productRequestDto.discount;
             //product.ProductImages.Add();
             return product;
         } 
@@ -28,6 +29,7 @@ namespace FlipCommerce.Transformer
             productResponseDto.availableQuanity = product.Quantity;
             productResponseDto.category = product.category.ToString();
             productResponseDto.imageUrls=new List<string> ();
+            productResponseDto.discount = product.discount;
             foreach(ProductImage image in product.ProductImages)
             {
                 productResponseDto.imageUrls.Add(image.ImageUrl);

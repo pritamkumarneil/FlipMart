@@ -9,6 +9,7 @@ namespace FlipCommerce.DTO.ResponseDto
         public string SellerName { get; set; }
         public string Status { get; set; }
         public int ProductPrice { get; set; }
+        public int discount { get; set; }
         public string category { get; set; }
         public string Message { get; set; }
         public int availableQuanity { get; set; }

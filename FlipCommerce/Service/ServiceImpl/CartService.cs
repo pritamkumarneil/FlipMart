@@ -32,7 +32,19 @@ namespace FlipCommerce.Service.ServiceImpl
             }
 
             Product? product = flipCommerceDbContext.Products.Find(itemRequestDto.ProductId);
-            Cart cart = flipCommerceDbContext.Customers.Where(c => c.EmailId.Equals(itemRequestDto.CustomerMail)).Include(c => c.cart).ThenInclude(c => c.Items).ThenInclude(i => i.product).FirstOrDefault().cart;
+            if (product == null)
+            {
+                throw new ProductNotFoundException("Product Not found ");
+            }
+            Customer? customer = flipCommerceDbContext.Customers
+                .Where(c => c.EmailId
+                .Equals(itemRequestDto.CustomerMail))
+                .Include(c => c.cart)
+                .ThenInclude(c => c.Items)
+                .ThenInclude(i => i.product)
+                .FirstOrDefault();
+
+            Cart cart = customer.cart;
 
             foreach(Item item1 in cart.Items.ToList()){
                 if (item1.product.Id == product.Id)
@@ -43,12 +55,15 @@ namespace FlipCommerce.Service.ServiceImpl
                         throw new ProductQantityLesserException("Insufficient Product Available");
                     }
                     item1.RequiredQuantity = totalRequiredQuantity;
-                    cart.CartTotal += (itemRequestDto.RequiredQuantity * product.Price);
+                    item1.itemCost += (itemRequestDto.RequiredQuantity * (1 - (product.discount / 100)) * product.Price);
+                    cart.CartTotal += (itemRequestDto.RequiredQuantity * (1 - (product.discount / 100)) * product.Price);
                     return CartTransformer.CartToCartResponseDto(cart);
                 }
             }
+            //item.itemCost += (itemRequestDto.RequiredQuantity * (1 - (product.discount / 100)) * product.Price);
+            // above line not needed because it is been taken care of in item service
 
-            cart.CartTotal += itemRequestDto.RequiredQuantity * product.Price;
+            cart.CartTotal += (itemRequestDto.RequiredQuantity * (1 - (product.discount / 100)) * product.Price);
             // make relation between item and product
             item.product = product;
             product.Items.Add(item);

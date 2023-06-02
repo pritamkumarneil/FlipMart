@@ -118,7 +118,7 @@ namespace FlipCommerce.Service.ServiceImpl
                 {
                     /*cart.Items.Remove(item);
                     item.product = null;*/
-                    cart.CartTotal -= (item.RequiredQuantity * product.Price);
+                    cart.CartTotal -= (item.itemCost);
                     flipCommerceDbContext.Items.Remove(item);
                     break;
                 }

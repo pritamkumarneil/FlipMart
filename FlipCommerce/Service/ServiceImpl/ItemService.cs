@@ -85,7 +85,8 @@ namespace FlipCommerce.Service.ServiceImpl
                         throw new ProductQantityLesserException(totalRequiredQuantity+ product.Name+ " not available in stock ");
                     }
                     item1.RequiredQuantity = totalRequiredQuantity;
-                    cart.CartTotal += (requiredQuantity * product.Price);
+                    item1.itemCost += ((requiredQuantity * (100 - product.discount) * product.Price) + 99) / 100;
+                    cart.CartTotal += ((requiredQuantity * (100 - product.discount) * product.Price) + 99) / 100;
                     item = item1;
                     break;
                 }
@@ -102,7 +103,9 @@ namespace FlipCommerce.Service.ServiceImpl
             item = ItemTranformer.ItemRequestDtoToItem(itemRequestDto);
 
             item.RequiredQuantity = requiredQuantity;
-            cart.CartTotal = totalValue + requiredQuantity * product.Price;
+            item.itemCost += ((requiredQuantity * (100 - product.discount) * product.Price) + 99) / 100;
+            cart.CartTotal = totalValue + ((requiredQuantity * (100 - product.discount) * product.Price)+99)/100;
+            
             // make relation between item and product
             item.product = product;
             product.Items.Add(item);
@@ -169,6 +172,7 @@ namespace FlipCommerce.Service.ServiceImpl
             Item item = ItemTranformer.ItemRequestDtoToItem(itemRequestDto);
 
             item.RequiredQuantity = requiredQuantity;
+            item.itemCost+=((requiredQuantity * (100 - product.discount) * product.Price) + 99) / 100;
 
             return item;
 

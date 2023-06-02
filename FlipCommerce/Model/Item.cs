@@ -4,6 +4,7 @@
     {
         public int Id { get; set; }
         public int RequiredQuantity { get; set; }
+        public int itemCost { get; set; }
 
         //NavigationalProperties
         public int? CartId { get; set; }

@@ -35,6 +35,7 @@ namespace FlipCommerce.Transformer
             int n=order.CardUsed.Length;
             orderResponseDto.CardUsed = "XXXX XXXX XXXX "+order.CardUsed.Substring(n-5,4);
             orderResponseDto.TotalAmount = order.OrderValue;
+            orderResponseDto.deliveryDate = order.DeliveryDate;
             orderResponseDto.address =order.address==null? null: AddressTransformer.DeliveryAddressToAddressDto(order.address);
             return orderResponseDto;
         }
