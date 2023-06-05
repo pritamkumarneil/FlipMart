@@ -115,7 +115,7 @@ namespace FlipCommerce.Service.ServiceImpl
             }
             order.OrderValue = totalAmount;
             order.CardUsed = card.CardNo;
-            order.DeliveryDate= DateTime.Now.AddDays(4);
+            order.DeliveryDate= DateTime.Now.AddDays(4).Date;
             order.Status = Enums.OrderStatus.IN_PROGRESS;
 
             // removing all items from cart;
@@ -216,6 +216,7 @@ namespace FlipCommerce.Service.ServiceImpl
             // create Item 
             Item item = new Item();
             item.RequiredQuantity = orderRequestDto.RequiredQuantity;
+            item.itemCost = (item.RequiredQuantity * product.Price * (100 - product.discount) + 50) / 100;
             
             // establishing relationship between item and product
             item.product = product;
@@ -223,12 +224,20 @@ namespace FlipCommerce.Service.ServiceImpl
 
             Order order = OrderTransformer.OrderRequestDtoToOrder(orderRequestDto);
 
-            order.OrderValue += (item.RequiredQuantity * (1 - (product.discount / 100)) * product.Price);
+            //order.OrderValue += (item.RequiredQuantity * (1 - (product.discount / 100)) * product.Price);
+            order.OrderValue += item.itemCost;
             
 
             // establishing relation between order and items
             order.Items.Add(item);
             item.order=order;
+
+            DeliveryAddress address = AddressTransformer.AddressRequestDtoToDeliveryAddress(orderRequestDto.address);
+            address.Orders.Add(order);
+            order.address = address;
+            // making relation between customer and address
+            customer.addresses.Add(address);
+            address.customer = customer;
 
             // establishing relation between order and customer 
             order.customer = customer;

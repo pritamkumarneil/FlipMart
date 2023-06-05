@@ -10,7 +10,7 @@ namespace FlipCommerce.Transformer
         {
             Order order = new();
 
-            order.OrderDate = DateTime.Now;
+            order.OrderDate = DateTime.Now.Date;
             order.OrderNo=Guid.NewGuid().ToString();
             
             return order;
@@ -18,9 +18,9 @@ namespace FlipCommerce.Transformer
         public static Order OrderRequestDtoToOrder(OrderRequestDto orderRequestDto)
         {
             Order order = new();
-            order.OrderDate= DateTime.Now;
+            order.OrderDate= DateTime.Now.Date;
             order.OrderNo = Guid.NewGuid().ToString();
-            order.DeliveryDate = DateTime.Now.AddDays(5);
+            order.DeliveryDate = DateTime.Now.AddDays(5).Date;
             order.CardUsed = orderRequestDto.CardNo;
             order.Status = Enums.OrderStatus.IN_PROGRESS;
             return order;
