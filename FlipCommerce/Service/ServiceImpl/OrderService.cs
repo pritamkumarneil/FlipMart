@@ -113,6 +113,7 @@ namespace FlipCommerce.Service.ServiceImpl
                     item.product.productStatus = Enums.ProductStatus.OUT_OF_STOCK;
                 }
             }
+
             order.OrderValue = totalAmount;
             order.CardUsed = card.CardNo;
             order.DeliveryDate= DateTime.Now.AddDays(4).Date;
@@ -137,8 +138,6 @@ namespace FlipCommerce.Service.ServiceImpl
 
             flipCommerceDbContext.Customers.Update(customer);
             flipCommerceDbContext.SaveChanges();
-
-
             return OrderTransformer.OrderToOrderResponseDto(order);
 
         }
