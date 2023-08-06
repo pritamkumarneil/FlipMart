@@ -76,13 +76,8 @@ namespace FlipCommerce.Service.ServiceImpl
                 .Include(c => c.cart)
                 .ThenInclude(c => c.Items)
                 .ThenInclude(i => i.product)
-                .ThenInclude(p => p.ProductImages)
-                .FirstOrDefault();
-            if (customer == null)
-            {
-                throw new CustomerNotFoundException("Customer with given mail doesn't Exist");
-            }
-
+                .ThenInclude(p => p!.ProductImages)
+                .FirstOrDefault() ?? throw new CustomerNotFoundException("Customer with given mail doesn't Exist");
             return CartTransformer.CartToCartResponseDto(customer.cart);
         }
 
@@ -99,18 +94,8 @@ namespace FlipCommerce.Service.ServiceImpl
                 .ThenInclude(c => c.Items)
                 .ThenInclude(i => i.product)
                 .ThenInclude(p=>p.ProductImages)
-                .FirstOrDefault();
-
-            if (customer == null)
-            {
-                throw new CustomerNotFoundException("Customer with given mail doesn't exist");
-            }
-
-            Product? product = flipCommerceDbContext.Products.Find(productId);
-            if (product == null)
-            {
-                throw new ProductNotFoundException("product Not found with given id");
-            }
+                .FirstOrDefault() ?? throw new CustomerNotFoundException("Customer with given mail doesn't exist");
+            Product? product = flipCommerceDbContext.Products.Find(productId) ?? throw new ProductNotFoundException("product Not found with given id");
             Cart cart = customer.cart;
             foreach(Item item in cart.Items)
             {
@@ -124,6 +109,7 @@ namespace FlipCommerce.Service.ServiceImpl
                 }
             }
             flipCommerceDbContext.SaveChanges();
+            
             return CartTransformer.CartToCartResponseDto(cart);
         }
     }
