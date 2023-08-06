@@ -167,22 +167,13 @@ namespace FlipCommerce.Service.ServiceImpl
                 .Include(c=>c.Orders)
                 .ThenInclude(o=>o.Items)
                 .ThenInclude(i=>i.product)
-                .FirstOrDefault();
-
-            if (customer == null)
-            {
-                throw new CustomerNotFoundException("Customer with given id doens't exist");
-            }
+                .FirstOrDefault() ?? throw new CustomerNotFoundException("Customer with given id doens't exist");
 
 
             // validating Carddetails
             string cardNo = orderRequestDto.CardNo;
             int CVV = orderRequestDto.CVV;
-            Card? card = flipCommerceDbContext.Cards.Where(c => c.CardNo.Equals(cardNo)).FirstOrDefault();
-            if (card == null)
-            {
-                throw new CardNotFoundException("No card exist with given detail");
-            }
+            Card? card = flipCommerceDbContext.Cards.Where(c => c.CardNo.Equals(cardNo)).FirstOrDefault() ?? throw new CardNotFoundException("No card exist with given detail");
             ICollection<Card> allCard = customer.Cards;
             if (!allCard.Contains(card))
             {
@@ -194,11 +185,7 @@ namespace FlipCommerce.Service.ServiceImpl
             }
 
             // Validate Product 
-            Product? product = flipCommerceDbContext.Products.Find(orderRequestDto.PoductId);
-            if (product == null)
-            {
-                throw new ProductNotFoundException("Invalid Product Id");
-            }
+            Product? product = flipCommerceDbContext.Products.Find(orderRequestDto.PoductId) ?? throw new ProductNotFoundException("Invalid Product Id");
             if (product.productStatus.Equals(Enums.ProductStatus.OUT_OF_STOCK))
             {
                 throw new ProductNotFoundException("Product is Out Of Stock");
@@ -278,11 +265,7 @@ namespace FlipCommerce.Service.ServiceImpl
             {
                 throw new OrderNotFoundException("No orders made yet");
             }
-            Order? order=flipCommerceDbContext.Orders.Where(O=>O.OrderNo.Equals(orderNo)).FirstOrDefault();
-            if (order == null)
-            {
-                throw new OrderNotFoundException("Wrong Ordre NO");
-            }
+            Order? order=flipCommerceDbContext.Orders.Where(O=>O.OrderNo.Equals(orderNo)).FirstOrDefault() ?? throw new OrderNotFoundException("Wrong Ordre NO");
             return order.Status.ToString();
         }
         public OrderResponseDto CancelOrder(string orderNo)
@@ -295,11 +278,7 @@ namespace FlipCommerce.Service.ServiceImpl
                 .Where(O => O.OrderNo.Equals(orderNo))
                 .Include(O=>O.Items)
                 .ThenInclude(i=>i.product)
-                .FirstOrDefault();
-            if (order == null)
-            {
-                throw new OrderNotFoundException("Wrong Ordre NO");
-            }
+                .FirstOrDefault() ?? throw new OrderNotFoundException("Wrong Ordre NO");
             // check if order is delivered or alreadyCanceled
             if (order.Status.Equals(Enums.OrderStatus.CANCELLED)
                 ||order.Status.Equals(Enums.OrderStatus.FAILED)
