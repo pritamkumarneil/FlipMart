@@ -57,12 +57,7 @@ namespace FlipCommerce.Service.ServiceImpl
                 throw new CustomerNotFoundException("No Customer with given mail available");
             }
             
-            Customer? customer = flipCommerceDbContext.Customers.Where(c=>c.EmailId.Equals(email)).FirstOrDefault();
-
-            if (customer == null)
-            {
-                throw new CustomerNotFoundException("Costomer not found with emailId");
-            }
+            Customer? customer = flipCommerceDbContext.Customers.Where(c=>c.EmailId.Equals(email)).FirstOrDefault() ?? throw new CustomerNotFoundException("Costomer not found with emailId");
             return CustomerTransformer.CustomerToCustomerResponseDto(customer);
         }
         public CartResponseDto GetCart(string customerMail)
